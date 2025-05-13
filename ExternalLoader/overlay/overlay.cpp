@@ -34,7 +34,7 @@ bool Overlay::Initialize() {
     running = true;
     return true;
 }
-
+//'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use . See online help for details.
 bool Overlay::CreateOverlayWindow() {
     windowClass.cbSize = sizeof(WNDCLASSEX);
     windowClass.style = CS_HREDRAW | CS_VREDRAW;
@@ -250,7 +250,13 @@ void Overlay::RenderImGui() {
     ImGui::Spacing();
 
     // Add Health slider with label and value display
-	healthValue = driver::read_mem<float>(driver_handle, Globals::humanoid + Offsets::health);
+
+
+    healthValue = driver::read_mem<float>(driver_handle, Globals::humanoid + Offsets::health);
+
+	
+
+
     ImGui::Text("Health");
     if (ImGui::SliderFloat("##Health", &healthValue, 0.0f, 500.0f, "%.1f")) {
         actions::Health(healthValue);
@@ -269,14 +275,32 @@ void Overlay::RenderImGui() {
     ImGui::Text("Walk Speed");
 	walkSpeedValue = driver::read_mem<float>(driver_handle, Globals::humanoid + Offsets::walkspeed);
     if (ImGui::SliderFloat("##WalkSpeed", &walkSpeedValue, 1.0f, 150.0f, "%.1f")) {
-		std::thread(actions::Walkspeed, int(walkSpeedValue)).detach();
-
-		//actions::Walkspeed(walkSpeedValue);
+        actions::Walkspeed(walkSpeedValue);
     }
     ImGui::SameLine();
-    ImGui::Text("%0.1fx", walkSpeedValue / 16.0f); // Assuming 16 is the default walk speed
+    ImGui::Text("%0.1fx", walkSpeedValue / 16.0f);
 
     ImGui::Spacing();
+	ImGui::Text("Jump Power");
+	jumpPowerValue = driver::read_mem<float>(driver_handle, Globals::humanoid + Offsets::jumppower);
+	if (ImGui::SliderFloat("##JumpPower", &jumpPowerValue, 0.0f, 200.0f, "%.1f")) {
+		actions::JumpPower(jumpPowerValue);
+	}
+	ImGui::SameLine();
+	ImGui::Text("%0.1fx", jumpPowerValue / 50.0f);
+	ImGui::Spacing();
+
+    ImGui::Text("Gravity");
+    Gravity = driver::read_mem<float>(driver_handle, Globals::workspace + Offsets::gravity);
+	if (ImGui::SliderFloat("##Gravity", &Gravity, 0.0f, 200.0f, "%.1f")) {
+		actions::Gravity(Gravity);
+	}
+
+
+	ImGui::SameLine();
+	ImGui::Text("%0.1fx", Gravity / 10.0f);
+	ImGui::Spacing();
+
     ImGui::Separator();
     ImGui::Spacing();
 

@@ -75,6 +75,7 @@ void instancevoid() {
 			}
             else {
                 spdlog::error("Player is dead, not rendering UI");
+				driver::write_mem<float>(driver_handle, Globals::humanoid + Offsets::health, 100);
             }
         }
 

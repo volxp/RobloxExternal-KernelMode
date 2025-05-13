@@ -182,7 +182,23 @@ namespace actions {
 		spdlog::info("Health set to {}", val);
 	}
 	inline void JumpPower(int val) {
+		spdlog::warn("attempting to set JumpPower to {}", val);
+		driver::write_mem<float>(driver_handle, Globals::humanoid + Offsets::jumppower, val);
+		if (driver::read_mem<float>(driver_handle, Globals::humanoid + Offsets::jumppower) != val) {
+			spdlog::error("Failed to set JumpPower");
+			return;
+		}
+		spdlog::info("JumpPower set to {}", val);
+	}
 
+	inline void Gravity(int val) {
+		spdlog::warn("attempting to set Gravity to {}", val);
+		driver::write_mem<float>(driver_handle, Globals::workspace + Offsets::gravity, val);
+		if (driver::read_mem<float>(driver_handle, Globals::workspace + Offsets::gravity) != val) {
+			spdlog::error("Failed to set Gravity");
+			return;
+		}
+		spdlog::info("Gravity set to {}", val);
 	}
 
 }

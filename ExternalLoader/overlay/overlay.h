@@ -30,6 +30,7 @@ private:
     float healthValue = 100.0f;  // Default health value
     float walkSpeedValue = 16.0f;  // Default walk speed
     float jumpPowerValue = 50.0f;
+	float Gravity = 10.0f;
     // Initialization methods
     bool CreateOverlayWindow();
     bool InitializeDirectX();
