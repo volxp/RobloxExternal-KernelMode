@@ -1,39 +1,36 @@
 #include <iostream>
-#include "TaskScheduler/Memory.hpp"
 
-namespace actions {
-	void Walkspeed(int val) {
-		spdlog::warn("attempting to set Walkspeed to {}", val);
-		driver::write_mem<float>(driver_handle, Globals::humanoid + Offsets::walkspeed, val);
-		driver::write_mem<float>(driver_handle, Globals::humanoid + Offsets::walkspeedcheck, val);
+#include "overlay/overlay.h"
 
-		if (driver::read_mem<float>(driver_handle, Globals::humanoid + Offsets::walkspeed) != val) {
-			spdlog::error("Failed to set Walkspeed");
-			return;
-		}
-		
-		spdlog::info("Walkspeed set to {}", val);
-	}
 
-	void Health(int val) {
-		spdlog::warn("attempting to set Health to {}", val);
-		driver::write_mem<float>(driver_handle, Globals::humanoid + Offsets::health, val);
-		if (driver::read_mem<float>(driver_handle, Globals::humanoid + Offsets::health) != val) {
-			spdlog::error("Failed to set Health");
-			return;
-		}
-		spdlog::info("Health set to {}", val);
-	}
+
+
+
+void runui() {
+    Overlay overlay;
+    if (!overlay.Initialize()) {
+        spdlog::error("Failed to initialize overlay");
+        return;
+    }
+    spdlog::info("Overlay Running");
+    overlay.Run();
+    spdlog::info("Overlay Closed");
+    overlay.Shutdown();
+
 }
 
 void instancevoid() {
 	Setup();
-
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
     bool firstrun = true;
     bool isDead = false;
-
+    bool isuirendered = false;
+    bool spampldead = true;
+	bool spamplalive = true;
     while (true) {
+
+
         Instance Datamodel(TaskScheduler::Datamodel::evaluate::GetDataModel());
         Globals::datamodel = Datamodel.Address;
 
@@ -53,26 +50,37 @@ void instancevoid() {
         Globals::camera = Camera.Address;
 
         float health = driver::read_mem<float>(driver_handle, Globals::humanoid + Offsets::health);
+		if (health <= 0) {
+			isDead = true;
+			if (spampldead)
+			    spdlog::error("Player is dead");
+			    spampldead = false;
+				spamplalive = true;
+                
+		}
+		else {
+			isDead = false;
+            if (spamplalive)
+			    spdlog::info("Player is alive");
+			    spamplalive = false;
+                spampldead = true;
 
-        if (health < 1.0f) {
+		}
+
+        if (!isuirendered ) {
+			
             if (!isDead) {
-                spdlog::warn("Player Dead");
-                isDead = true;
+                std::thread(runui).detach();
+                isuirendered = true;
+			}
+            else {
+                spdlog::error("Player is dead, not rendering UI");
             }
         }
-        else {
-            if (isDead) {
-				spdlog::warn("Player Alive");
-                firstrun = true;
-                isDead = false;
-            }
 
-            if (firstrun) {
-                actions::Walkspeed(10000);
-                actions::Health(10000);
-                firstrun = false;
-            }
-        }
+
+
+
     }
 
 }
@@ -80,7 +88,11 @@ void instancevoid() {
 
 
 int main() {
-	instancevoid();
+
+    
+    instancevoid();
+	//std::thread(instancevoid).detach();
+    //std::thread(runui).detach();
 
 	CloseHandle(Globals::handle);
 	CloseHandle(driver_handle);

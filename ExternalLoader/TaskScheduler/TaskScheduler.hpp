@@ -20,6 +20,7 @@
 #include <functional>
 #include "TlHelp32.h"
 #include <chrono>
+#include <spdlog/spdlog.h>
 #pragma comment(lib, "dbghelp.lib")
 
 
@@ -350,8 +351,8 @@ namespace TaskScheduler {
                 std::optional<std::string> logFile = getLatestLogFile(logPath);
                 if (!logFile.has_value()) {
                     return 1;
-                }
-
+                } 
+				//spdlog::warn("Datamodel: 0x{}", findDatamodelPointer(process, locateTid(readFile(logFile.value()))));
                 return findDatamodelPointer(process, locateTid(readFile(logFile.value())));
             }
         }

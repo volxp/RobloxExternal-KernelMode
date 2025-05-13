@@ -57,7 +57,10 @@
     <ClCompile Include="TaskScheduler\DriverManager.hpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="overlay\overlay.hpp">
+    <ClCompile Include="overlay\overlay.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="overlay\overlay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

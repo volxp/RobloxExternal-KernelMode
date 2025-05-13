@@ -158,3 +158,31 @@ namespace instance {
 		// 
 	}
 }
+namespace actions {
+	inline void Walkspeed(int val) {
+		spdlog::warn("attempting to set Walkspeed to {}", val);
+		driver::write_mem<float>(driver_handle, Globals::humanoid + Offsets::walkspeed, val);
+		driver::write_mem<float>(driver_handle, Globals::humanoid + Offsets::walkspeedcheck, val);
+
+		if (driver::read_mem<float>(driver_handle, Globals::humanoid + Offsets::walkspeed) != val) {
+			spdlog::error("Failed to set Walkspeed");
+			return;
+		}
+
+		spdlog::info("Walkspeed set to {}", val);
+	}
+
+	inline void Health(int val) {
+		spdlog::warn("attempting to set Health to {}", val);
+		driver::write_mem<float>(driver_handle, Globals::humanoid + Offsets::health, val);
+		if (driver::read_mem<float>(driver_handle, Globals::humanoid + Offsets::health) != val) {
+			spdlog::error("Failed to set Health");
+			return;
+		}
+		spdlog::info("Health set to {}", val);
+	}
+	inline void JumpPower(int val) {
+
+	}
+
+}
