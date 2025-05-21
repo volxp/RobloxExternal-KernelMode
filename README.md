@@ -22,7 +22,7 @@ if you dont want to buy a signature for your driver, i recommend loading the dri
 **KDMAPPER**
 
 ## Offsets & Update
-you can update in the `Update.hpp`
+you can update in the `Update/Offsets.hpp`
 
 
 credits: Volxphy, Forlorn (tysm for the instance and the idea of external)
